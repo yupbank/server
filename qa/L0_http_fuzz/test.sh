@@ -64,8 +64,8 @@ function_install_python38() {
     create_conda_env "3.8" "python-3-8"
 
     # Install test script dependencies
-    pip3 install --upgrade wheel setuptools boofuzz==0.3.0 numpy pillow attrdict future grpcio requests gsutil \
-                            awscli six grpcio-channelz prettytable virtualenv
+    pip3 install --upgrade wheel setuptools boofuzz==0.3.0 numpy pillow attrdict future grpcio==1.54.0 requests gsutil \
+                            awscli six grpcio-channelz==1.54.0 prettytable virtualenv
 }
 function_install_python38
 
