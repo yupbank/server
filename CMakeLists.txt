@@ -29,8 +29,10 @@ cmake_minimum_required(VERSION 3.18)
 project(tritonserver LANGUAGES C CXX)
 
 include(CMakeDependentOption)
+
+set(CPACK_GENERATOR "TGZ")
 include(CPack)
-set(CPACK_SOURCE_GENERATOR "TGZ")
+
 
 # Use C++17 standard as Triton's minimum required.
 set(TRITON_MIN_CXX_STANDARD 17 CACHE STRING "The minimum C++ standard which features are requested to build this target.")
