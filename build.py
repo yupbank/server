@@ -1158,7 +1158,7 @@ WORKDIR /opt/tritonserver
 COPY --chown=1000:1000 NVIDIA_Deep_Learning_Container_License.pdf .
 
 """
-    if not FLAGS.no_core_build:
+    if not FLAGS.no_core_build or FLAGS.copy_core_build_artifacts:
         # Add feature labels for SageMaker endpoint
         if "sagemaker" in endpoints:
             df += """
@@ -1766,11 +1766,7 @@ def core_build(
     # For windows, Triton is not delivered as a container so skip for
     # windows platform.
     if target_platform() != "windows":
-        if (
-            (not FLAGS.no_container_build)
-            and (not FLAGS.no_core_build)
-            and (not FLAGS.no_container_source)
-        ):
+        if not FLAGS.no_container_build:
             cmake_script.mkdir(os.path.join(install_dir, "third-party-src"))
             cmake_script.cwd(repo_build_dir)
             cmake_script.tar(
@@ -1974,7 +1970,7 @@ def cibase_build(
     )
     # Skip copying the artifacts in the bin, lib, and python as those directories will
     # be missing when the core build is not enabled.
-    if not FLAGS.no_core_build:
+    if (not FLAGS.no_core_build) or (FLAGS.copy_core_build_artifacts):
         cmake_script.cpdir(os.path.join(repo_install_dir, "bin"), ci_dir)
         cmake_script.mkdir(os.path.join(ci_dir, "lib"))
         cmake_script.cp(
@@ -2372,6 +2368,12 @@ if __name__ == "__main__":
         action="store_true",
         required=False,
         help="Do not build Triton core shared library or executable.",
+    )
+    parser.add_argument(
+        "--copy-core-build-artifacts",
+        action="store_true",
+        required=False,
+        help="Copy Triton core build artifacts. This option is useful when the the base image already has the Triton core artifacts.",
     )
     parser.add_argument(
         "--backend",
