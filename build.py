@@ -1818,6 +1818,12 @@ def core_build(
 
 def tensorrtllm_prebuild(cmake_script):
     # Export the TRT_ROOT environment variable
+    cmake_script.cmd("export TRTLLM_TRT_VER=9.1.0.4")
+    cmake_script.cmd("export TRTLLM_CUDA_VER=12.2")
+    cmake_script.cmd("export TRTLLM_CUDNN_VER=8.9.4.25-1+cuda12.2")
+    cmake_script.cmd("export TRTLLM_NCCL_VER=2.18.3-1+cuda12.2")
+    cmake_script.cmd("export TRTLLM_CUBLAS_VER=12.2.5.6-1")
+
     cmake_script.cmd("export TRT_ROOT=/usr/local/tensorrt")
     cmake_script.cmd("export ARCH=$(uname -m)")
 
