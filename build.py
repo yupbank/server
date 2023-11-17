@@ -1328,11 +1328,11 @@ RUN pip uninstall -y tensorrt
 RUN apt-get update && apt-get install -y --no-install-recommends python-is-python3
 RUN git clone --single-branch --depth=1 -b {} https://{}:{}@gitlab-master.nvidia.com/ftp/tekit_backend.git tensorrtllm_backend
 RUN cd tensorrtllm_backend && git submodule update --init --recursive
-ENV TRTLLM_TRT_VER=9.1.0.4
-ENV TRTLLM_CUDA_VER=12.2
-ENV TRTLLM_CUDNN_VER=8.9.4.25-1+cuda12.2
-ENV TRTLLM_NCCL_VER=2.18.3-1+cuda12.2
-ENV TRTLLM_CUBLAS_VER=12.2.5.6-1
+ENV TRT_VER=9.1.0.4
+ENV CUDA_VER=12.2
+ENV CUDNN_VER=8.9.4.25-1+cuda12.2
+ENV NCCL_VER=2.18.3-1+cuda12.2
+ENV CUBLAS_VER=12.2.5.6-1
 RUN cp tensorrtllm_backend/tensorrt_llm/docker/common/install_tensorrt.sh /tmp/
 RUN rm -fr tensorrtllm_backend
     """.format(
@@ -1818,11 +1818,11 @@ def core_build(
 
 def tensorrtllm_prebuild(cmake_script):
     # Export the TRT_ROOT environment variable
-    cmake_script.cmd("export TRTLLM_TRT_VER=9.1.0.4")
-    cmake_script.cmd("export TRTLLM_CUDA_VER=12.2")
-    cmake_script.cmd("export TRTLLM_CUDNN_VER=8.9.4.25-1+cuda12.2")
-    cmake_script.cmd("export TRTLLM_NCCL_VER=2.18.3-1+cuda12.2")
-    cmake_script.cmd("export TRTLLM_CUBLAS_VER=12.2.5.6-1")
+    cmake_script.cmd("export TRT_VER=9.1.0.4")
+    cmake_script.cmd("export CUDA_VER=12.2")
+    cmake_script.cmd("export CUDNN_VER=8.9.4.25-1+cuda12.2")
+    cmake_script.cmd("export NCCL_VER=2.18.3-1+cuda12.2")
+    cmake_script.cmd("export CUBLAS_VER=12.2.5.6-1")
 
     cmake_script.cmd("export TRT_ROOT=/usr/local/tensorrt")
     cmake_script.cmd("export ARCH=$(uname -m)")
