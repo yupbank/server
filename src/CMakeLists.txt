@@ -93,7 +93,6 @@ find_library(RE2_LIBRARY NAMES re2)
 #
 # tritonserver executable
 #
-target_compile_features(main PRIVATE cxx_std_17)
 add_executable(
   main
   classification.cc
