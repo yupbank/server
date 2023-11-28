@@ -73,12 +73,12 @@ TRITON_VERSION_MAP = {
     "2.41.0dev": (
         "23.12dev",  # triton container
         "23.10",  # upstream container
-        "1.16.2",  # ORT
+        "1.16.3",  # ORT
         "2023.0.0",  # ORT OpenVINO
         "2023.0.0",  # Standalone OpenVINO
         "3.2.6",  # DCGM version
         "py310_23.1.0-1",  # Conda version
-        "0.2.1.post1",  # vLLM version
+        "0.2.2",  # vLLM version
     )
 }
 
@@ -2044,7 +2044,7 @@ def cibase_build(
         "sequence",
         "dyna_sequence",
         "distributed_addsub",
-        "generative_sequence",
+        "iterative_sequence",
     ):
         be_install_dir = os.path.join(repo_install_dir, "backends", be)
         if target_platform() == "windows":
