@@ -69,6 +69,7 @@ RUN apt-get update && \
             libgoogle-perftools-dev \
             libopencv-dev \
             libopencv-core-dev \
+	    libre2-dev \
             libssl-dev \
             libtool \
             pkg-config \
@@ -164,6 +165,7 @@ RUN apt-get update && \
             libgoogle-perftools-dev \
             libopencv-dev \
             libopencv-core-dev \
+	    libre2-dev \
             libssl-dev \
             libtool \
             python3 \
