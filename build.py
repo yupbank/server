@@ -1284,9 +1284,7 @@ ENV CUBLAS_VER=12.3.2.9-1
 RUN cp tensorrtllm_backend/tensorrt_llm/docker/common/install_tensorrt.sh /tmp/
 RUN rm -fr tensorrtllm_backend
     """.format(
-            backends[be],
-            os.environ["REMOVE_ME_TRTLLM_USERNAME"],
-            os.environ["REMOVE_ME_TRTLLM_TOKEN"],
+            backends[be]
         )
         df += """
 RUN bash /tmp/install_tensorrt.sh --CUDA_VER=$CUDA_VER --CUDNN_VER=$CUDNN_VER --NCCL_VER=$NCCL_VER --CUBLAS_VER=$CUBLAS_VER && rm /tmp/install_tensorrt.sh
@@ -1805,10 +1803,8 @@ def backend_build(
 
     if be == "tensorrtllm":
         cmake_script.cmd(
-            "git clone --single-branch --depth=1 -b {} https://{}:{}@gitlab-master.nvidia.com/ftp/tekit_backend.git tensorrtllm".format(
-                tag,
-                os.environ["REMOVE_ME_TRTLLM_USERNAME"],
-                os.environ["REMOVE_ME_TRTLLM_TOKEN"],
+            "git clone --single-branch --depth=1 -b {} https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm".format(
+                tag
             )
         )
         tensorrtllm_prebuild(cmake_script)
