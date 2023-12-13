@@ -1275,7 +1275,7 @@ RUN apt-get remove --purge -y tensorrt* libnvinfer*
 RUN pip uninstall -y tensorrt
 # Install new version of TRT using the script from TRT-LLM
 RUN apt-get update && apt-get install -y --no-install-recommends python-is-python3
-RUN git clone --single-branch --depth=1 -b {} https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm_backend
+RUN git clone --single-branch --depth=1 -b fpetrini-cli-dev https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm_backend
 RUN cd tensorrtllm_backend && git submodule update --init --recursive
 ENV CUDA_VER=12.3
 ENV CUDNN_VER=8.9.6.50-1+cuda12.2
@@ -1283,9 +1283,7 @@ ENV NCCL_VER=2.19.3-1+cuda12.3
 ENV CUBLAS_VER=12.3.2.9-1
 RUN cp tensorrtllm_backend/tensorrt_llm/docker/common/install_tensorrt.sh /tmp/
 RUN rm -fr tensorrtllm_backend
-    """.format(
-            backends[be]
-        )
+    """
         df += """
 RUN bash /tmp/install_tensorrt.sh --CUDA_VER=$CUDA_VER --CUDNN_VER=$CUDNN_VER --NCCL_VER=$NCCL_VER --CUBLAS_VER=$CUBLAS_VER && rm /tmp/install_tensorrt.sh
 ENV TRT_ROOT=/usr/local/tensorrt
@@ -1803,9 +1801,7 @@ def backend_build(
 
     if be == "tensorrtllm":
         cmake_script.cmd(
-            "git clone --single-branch --depth=1 -b {} https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm".format(
-                tag
-            )
+            "git clone --single-branch --depth=1 -b fpetrini-cli-dev https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm"
         )
         tensorrtllm_prebuild(cmake_script)
     else:
