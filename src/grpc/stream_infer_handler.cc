@@ -558,8 +558,13 @@ ModelStreamInferHandler::StreamInferResponseComplete(
 {
   State* state = reinterpret_cast<State*>(userp);
 
-  // Increment the callback index
-  uint32_t response_index = state->cb_count_++;
+   uint32_t response_index;
+  {
+    std::lock_guard<std::recursive_mutex> lock(state->step_mtx_);
+    // Increment the callback index
+    response_index = state->cb_count_++;
+    state->complete_ = ((flags & TRITONSERVER_RESPONSE_COMPLETE_FINAL) != 0);
+  }
 
   LOG_VERBOSE(1) << "ModelStreamInferHandler::StreamInferComplete, context "
                  << state->context_->unique_id_ << ", " << state->unique_id_
@@ -574,7 +579,6 @@ ModelStreamInferHandler::StreamInferResponseComplete(
 #endif  // TRITON_ENABLE_TRACING
 
   // Log appropriate errors
-  state->complete_ = ((flags & TRITONSERVER_RESPONSE_COMPLETE_FINAL) != 0);
   if (!state->is_decoupled_) {
     if (!state->complete_) {
       LOG_ERROR << "[INTERNAL] ModelStreamInfer received a response without "

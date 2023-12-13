@@ -1070,9 +1070,14 @@ class InferHandlerState {
   // stream.
   bool IsComplete()
   {
-    return (
-        complete_ && response_queue_->IsEmpty() &&
-        (cb_count_ == written_complete_count_));
+    std::lock_guard<std::recursive_mutex> lock(step_mtx_);
+    bool responses_done = false;
+    if (parameters_.enable_empty_final_response_) {
+      responses_done = (cb_count_ == written_complete_count_);
+    } else if (step_ == Steps::WRITEREADY) {
+      responses_done = (cb_count_ == written_complete_count_ + 1);
+    }
+    return (complete_ && response_queue_->IsEmpty()) && responses_done;
   }
 
   void MarkAsAsyncNotifyState() { async_notify_state_ = true; }
