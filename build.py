@@ -1275,7 +1275,7 @@ RUN apt-get remove --purge -y tensorrt* libnvinfer*
 RUN pip uninstall -y tensorrt
 # Install new version of TRT using the script from TRT-LLM
 RUN apt-get update && apt-get install -y --no-install-recommends python-is-python3
-RUN git clone --single-branch --depth=1 -b {} https://{}:{}@gitlab-master.nvidia.com/ftp/tekit_backend.git tensorrtllm_backend
+RUN git clone --single-branch --depth=1 -b {} https://github.com/triton-inference-server/tensorrtllm_backend.git tensorrtllm_backend
 RUN cd tensorrtllm_backend && git submodule update --init --recursive
 ENV CUDA_VER=12.3
 ENV CUDNN_VER=8.9.6.50-1+cuda12.2
