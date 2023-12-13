@@ -406,6 +406,7 @@ ModelStreamInferHandler::Process(InferHandler::State* state, bool rpc_ok)
     // Non-Decoupled state transitions
     //
     if (state->step_ == Steps::WRITTEN) {
+      state->written_complete_count_++;
       state->context_->ongoing_write_ = false;
 #ifdef TRITON_ENABLE_TRACING
       state->trace_timestamps_.emplace_back(
@@ -449,6 +450,7 @@ ModelStreamInferHandler::Process(InferHandler::State* state, bool rpc_ok)
     //  Decoupled state transitions
     //
     if (state->step_ == Steps::WRITTEN) {
+      state->written_complete_count_++;
       state->context_->ongoing_write_ = false;
 #ifdef TRITON_ENABLE_TRACING
       state->trace_timestamps_.emplace_back(

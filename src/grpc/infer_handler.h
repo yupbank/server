@@ -1030,6 +1030,7 @@ class InferHandlerState {
     context_ = context;
     step_ = start_step;
     cb_count_ = 0;
+    written_complete_count_ = 0;
     is_decoupled_ = false;
     complete_ = false;
     parameters_ = {};
@@ -1067,7 +1068,12 @@ class InferHandlerState {
   // Returns whether all the responses from the state
   // are delivered and successfully written on the
   // stream.
-  bool IsComplete() { return (complete_ && response_queue_->IsEmpty()); }
+  bool IsComplete()
+  {
+    return (
+        complete_ && response_queue_->IsEmpty() &&
+        (cb_count_ == written_complete_count_));
+  }
 
   void MarkAsAsyncNotifyState() { async_notify_state_ = true; }
   bool IsAsyncNotifyState() { return async_notify_state_; }
@@ -1098,6 +1104,7 @@ class InferHandlerState {
   StateParameters parameters_;
 
   std::atomic<uint32_t> cb_count_;
+  uint32_t written_complete_count_;
   bool complete_;
 
   RequestType request_;
