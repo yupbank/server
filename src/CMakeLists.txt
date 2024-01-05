@@ -30,6 +30,8 @@ project(tritonserverexe LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 
+set(FETCHCONTENT_QUIET OFF)
+
 #
 # Dependencies
 #

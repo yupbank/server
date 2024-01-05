@@ -29,7 +29,7 @@ cmake_minimum_required (VERSION 3.18)
 #
 # Unit tests
 #
-find_package(GTest REQUIRED)
+# find_package(GTest REQUIRED)
 
 #
 # caffe2plan
