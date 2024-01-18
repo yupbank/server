@@ -287,7 +287,6 @@ HTTP infer request (avg): 378us
   			Output (avg): 15us
 Summary for simple (-1): trace count = 1
 GRPC infer request (avg): 21441us
-	Wait/Read (avg): 20923us
 	Send (avg): 74us
 	Handler (avg): 395us
   		Overhead (avg): 16us
@@ -308,10 +307,6 @@ the request was enqueued in the scheduling queue.
 $ trace_summary.py -t <trace file>
 ...
 simple (-1):
-  	grpc wait/read start
-  		26529us
-  	grpc wait/read end
-  		39us
   	request handler start
   		15us
   	queue start
@@ -373,13 +368,6 @@ Data Flow:
 ```
 
 The meaning of the trace timestamps is:
-
-* GRPC Request Wait/Read: Collected only for inference requests that use the
-  GRPC protocol. The time spent waiting for a request to arrive at the
-  server and for that request to be read. Because wait time is
-  included in the time it is not a useful measure of how much time is
-  spent reading a request from the network. Tracing an HTTP request
-  will provide an accurate measure of the read time.
 
 * HTTP Request Receive: Collected only for inference requests that use the
   HTTP protocol. The time required to read the inference request from

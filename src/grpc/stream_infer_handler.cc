@@ -114,13 +114,6 @@ ModelStreamInferHandler::StartNewRequest()
   context->SetCompressionLevel(compression_level_);
   State* state = StateNew(tritonserver_.get(), context);
 
-#ifdef TRITON_ENABLE_TRACING
-  // Can't create trace as we don't know the model to be requested,
-  // track timestamps in 'state'
-  state->trace_timestamps_.emplace_back(
-      std::make_pair("GRPC_WAITREAD_START", TraceManager::CaptureTimestamp()));
-#endif  // TRITON_ENABLE_TRACING
-
   service_->RequestModelStreamInfer(
       state->context_->ctx_.get(), state->context_->responder_.get(), cq_, cq_,
       state);
@@ -193,10 +186,6 @@ ModelStreamInferHandler::Process(InferHandler::State* state, bool rpc_ok)
   } else if (state->step_ == Steps::READ) {
     TRITONSERVER_Error* err = nullptr;
     const inference::ModelInferRequest& request = state->request_;
-#ifdef TRITON_ENABLE_TRACING
-    state->trace_timestamps_.emplace_back(
-        std::make_pair("GRPC_WAITREAD_END", TraceManager::CaptureTimestamp()));
-#endif  // TRITON_ENABLE_TRACING
 
     // If done reading and no in-flight requests then can finish the
     // entire stream. Otherwise just finish this state.
@@ -372,15 +361,6 @@ ModelStreamInferHandler::Process(InferHandler::State* state, bool rpc_ok)
     // (i.e the next request in the stream).
     State* next_read_state =
         StateNew(tritonserver_.get(), context, Steps::READ);
-
-#ifdef TRITON_ENABLE_TRACING
-    // Capture a timestamp for the time when we start waiting for this
-    // next request to read.
-    // Can't create trace as we don't know the model to be requested,
-    // track timestamps in 'state'
-    next_read_state->trace_timestamps_.emplace_back(std::make_pair(
-        "GRPC_WAITREAD_START", TraceManager::CaptureTimestamp()));
-#endif  // TRITON_ENABLE_TRACING
 
     next_read_state->context_->responder_->Read(
         &next_read_state->request_, next_read_state);
