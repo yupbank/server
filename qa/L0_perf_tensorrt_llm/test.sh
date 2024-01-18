@@ -53,24 +53,74 @@ function clone_tensorrt_llm_backend_repo {
 }
 
 function upgrade_openmpi {
-    # Un install current version of Open MPI
+    # Uninstall current version of Open MPI
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
-    wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
-    rm -rf openmpi-${CURRENT_VERSION} && tar -xzf openmpi-${CURRENT_VERSION}.tar.gz && cd openmpi-${CURRENT_VERSION}
-    make clean && ./configure --prefix=/opt/hpcx/ompi/ && make uninstall
-    rm -rf /opt/hpcx/ompi/ /usr/local/mpi/ && cd ../ && rm -rf openmpi-${CURRENT_VERSION}
+
+    if [ -n "$CURRENT_VERSION" ]; then
+        wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz" || {
+            echo "Failed to download Open MPI ${CURRENT_VERSION}"
+            return 1
+        }
+        rm -rf "openmpi-${CURRENT_VERSION}" && tar -xzf "openmpi-${CURRENT_VERSION}.tar.gz" && cd "openmpi-${CURRENT_VERSION}" || {
+            echo "Failed to extract Open MPI ${CURRENT_VERSION}"
+            return 1
+        }
+        unset PMIX_VERSION && ./configure --prefix=/opt/hpcx/ompi/ && make uninstall || {
+            echo "Failed to uninstall Open MPI ${CURRENT_VERSION}"
+            return 1
+        }
+        rm -rf /opt/hpcx/ompi/ /usr/local/mpi/ || {
+            echo "Failed to remove Open MPI ${CURRENT_VERSION} installation directories"
+            return 1
+        }
+        cd ../ && rm -rf openmpi-${CURRENT_VERSION}
+    fi
 
     # Install latest Open MPI
-    wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
-    rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1
-    make clean && ./configure --prefix=/opt/hpcx/ompi/ && make && make install
-    echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >> ~/.bashrc
-    echo "export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib/:\$LD_LIBRARY_PATH" >> ~/.bashrc
+    wget "https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz" || {
+        echo "Failed to download Open MPI 5.0.1"
+        return 1
+    }
+    rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1 || {
+        echo "Failed to extract Open MPI 5.0.1"
+        return 1
+    }
+    ./configure --prefix=/opt/hpcx/ompi/ && make && make install || {
+        echo "Failed to install Open MPI 5.0.1"
+        return 1
+    }
+
+    # Update environment variables
+    echo 'export PATH=/opt/hpcx/ompi/bin:$PATH' >>~/.bashrc
+    echo 'export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib:$LD_LIBRARY_PATH' >>~/.bashrc
     source ~/.bashrc
+
+    # Clean up
+    rm -rf /tmp/openmpi-${CURRENT_VERSION} /tmp/openmpi-5.0.1
     mpirun --version
-    cd $BASE_DIR
+    cd "$BASE_DIR" || return
 }
+
+#function upgrade_openmpi {
+#    # Un install current version of Open MPI
+#    cd /tmp/
+#    local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
+#    wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
+#    rm -rf openmpi-${CURRENT_VERSION} && tar -xzf openmpi-${CURRENT_VERSION}.tar.gz && cd openmpi-${CURRENT_VERSION}
+#    unset PMIX_VERSION && ./configure --prefix=/opt/hpcx/ompi/ && make uninstall
+#    rm -rf /opt/hpcx/ompi/ /usr/local/mpi/ && cd ../ && rm -rf openmpi-${CURRENT_VERSION}
+#
+#    # Install latest Open MPI
+#    wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
+#    rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1
+#    ./configure --prefix=/opt/hpcx/ompi/ && make && make install
+#    echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >>~/.bashrc
+#    echo "export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib/:\$LD_LIBRARY_PATH" >>~/.bashrc
+#    source ~/.bashrc
+#    mpirun --version
+#    cd $BASE_DIR
+#}
 
 function install_tensorrt_llm {
     # Install CMake
