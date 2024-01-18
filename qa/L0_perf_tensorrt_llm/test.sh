@@ -57,8 +57,8 @@ function upgrade_openmpi {
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
     wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
-    tar -xzf openmpi-${CURRENT_VERSION}.tar.gz
-    cd openmpi-${CURRENT_VERSION}
+    rm -rf openmpi-${CURRENT_VERSION} && tar -xzf openmpi-${CURRENT_VERSION}.tar.gz && cd openmpi-${CURRENT_VERSION}
+    env | grep PMIX && unset PMIX_VERSION
     ./configure --prefix=/opt/hpcx/ompi/
     make uninstall
     rm -rf /opt/hpcx/ompi/ /usr/local/mpi/
@@ -67,8 +67,7 @@ function upgrade_openmpi {
 
     # Install latest Open MPI
     wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
-    tar -xzf openmpi-5.0.1.tar.gz
-    cd openmpi-5.0.1
+    rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1
     ./configure --prefix=/opt/hpcx/ompi/
     make && make install
     echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >> ~/.bashrc
