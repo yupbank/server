@@ -55,15 +55,15 @@ function clone_tensorrt_llm_backend_repo {
 function upgrade_openmpi {
     # Un install current version of Open MPI
     cd /tmp/
-    local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
-    wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
-    tar -xzf openmpi-${CURRENT_VERSION}.tar.gz
-    cd openmpi-${CURRENT_VERSION}
-    ./configure --prefix=/opt/hpcx/ompi/
-    make uninstall
+    #local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
+    #wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
+    #tar -xzf openmpi-${CURRENT_VERSION}.tar.gz
+    #cd openmpi-${CURRENT_VERSION}
+    #./configure --prefix=/opt/hpcx/ompi/
+    #make uninstall
     rm -rf /opt/hpcx/ompi/ /usr/local/mpi/
-    cd ../
-    rm -rf openmpi-${CURRENT_VERSION}
+    #cd ../
+    #rm -rf openmpi-${CURRENT_VERSION}
 
     # Install latest Open MPI
     wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
