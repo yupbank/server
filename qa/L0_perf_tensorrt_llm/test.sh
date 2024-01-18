@@ -74,7 +74,7 @@ function upgrade_openmpi {
     echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >> ~/.bashrc
     echo "export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib/:\$LD_LIBRARY_PATH" >> ~/.bashrc
     source ~/.bashrc
-    mpirun --version
+    echo $(mpirun --version)
     cd $BASE_DIR
 }
 
