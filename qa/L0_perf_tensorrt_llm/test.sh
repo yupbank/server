@@ -278,6 +278,8 @@ function kill_server {
 }
 
 upgrade_openmpi
+exit 0
+
 clone_tensorrt_llm_backend_repo
 install_tensorrt_llm
 build_gpt2_base_model
