@@ -74,7 +74,7 @@ function upgrade_openmpi {
             echo "Failed to remove Open MPI ${CURRENT_VERSION} installation directories"
             exit 1
         }
-        cd ../ && rm -rf openmpi-${CURRENT_VERSION}
+        cd ../ && rm -r openmpi-${CURRENT_VERSION}
     fi
 
     # Install latest Open MPI
@@ -102,9 +102,8 @@ function upgrade_openmpi {
     source ~/.bashrc
 
     # Clean up
-    rm -rf /tmp/openmpi-${CURRENT_VERSION} /tmp/openmpi-5.0.1
-    mpirun --version
     cd "$BASE_DIR"
+    mpirun --version
 }
 
 function bkp_upgrade_openmpi {
@@ -278,6 +277,7 @@ function kill_server {
 }
 
 upgrade_openmpi
+mpirun --version
 exit 0
 
 clone_tensorrt_llm_backend_repo
