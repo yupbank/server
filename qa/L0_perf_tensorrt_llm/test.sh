@@ -52,7 +52,7 @@ function clone_tensorrt_llm_backend_repo {
     cd $TENSORRTLLM_BACKEND_DIR && git lfs install && git submodule update --init --recursive
 }
 
-function bkp_upgrade_openmpi {
+function upgrade_openmpi {
     # Uninstall current version of Open MPI
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
@@ -60,19 +60,19 @@ function bkp_upgrade_openmpi {
     if [ -n "$CURRENT_VERSION" ]; then
         wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz" || {
             echo "Failed to download Open MPI ${CURRENT_VERSION}"
-            return 1
+            exit 1
         }
         rm -rf "openmpi-${CURRENT_VERSION}" && tar -xzf "openmpi-${CURRENT_VERSION}.tar.gz" && cd "openmpi-${CURRENT_VERSION}" || {
             echo "Failed to extract Open MPI ${CURRENT_VERSION}"
-            return 1
+            exit 1
         }
         unset PMIX_VERSION && ./configure --prefix=/opt/hpcx/ompi/ && make uninstall || {
             echo "Failed to uninstall Open MPI ${CURRENT_VERSION}"
-            return 1
+            exit 1
         }
         rm -rf /opt/hpcx/ompi/ /usr/local/mpi/ || {
             echo "Failed to remove Open MPI ${CURRENT_VERSION} installation directories"
-            return 1
+            exit 1
         }
         cd ../ && rm -rf openmpi-${CURRENT_VERSION}
     fi
@@ -80,15 +80,15 @@ function bkp_upgrade_openmpi {
     # Install latest Open MPI
     wget "https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz" || {
         echo "Failed to download Open MPI 5.0.1"
-        return 1
+        exit 1
     }
     rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1 || {
         echo "Failed to extract Open MPI 5.0.1"
-        return 1
+        exit 1
     }
     ./configure --prefix=/opt/hpcx/ompi/ && make && make install || {
         echo "Failed to install Open MPI 5.0.1"
-        return 1
+        exit 1
     }
 
     # Update environment variables
@@ -104,10 +104,10 @@ function bkp_upgrade_openmpi {
     # Clean up
     rm -rf /tmp/openmpi-${CURRENT_VERSION} /tmp/openmpi-5.0.1
     mpirun --version
-    cd "$BASE_DIR" || return
+    cd "$BASE_DIR"
 }
 
-function upgrade_openmpi {
+function bkp_upgrade_openmpi {
     # Un install current version of Open MPI
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
