@@ -92,8 +92,13 @@ function upgrade_openmpi {
     }
 
     # Update environment variables
-    echo 'export PATH=/opt/hpcx/ompi/bin:$PATH' >>~/.bashrc
-    echo 'export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib:$LD_LIBRARY_PATH' >>~/.bashrc
+    if ! grep -q '/opt/hpcx/ompi/bin' ~/.bashrc; then
+        echo 'export PATH=/opt/hpcx/ompi/bin:$PATH' >>~/.bashrc
+    fi
+
+    if ! grep -q '/opt/hpcx/ompi/lib' ~/.bashrc; then
+        echo 'export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib:$LD_LIBRARY_PATH' >>~/.bashrc
+    fi
     source ~/.bashrc
 
     # Clean up
