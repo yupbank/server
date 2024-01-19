@@ -52,7 +52,7 @@ function clone_tensorrt_llm_backend_repo {
     cd $TENSORRTLLM_BACKEND_DIR && git lfs install && git submodule update --init --recursive
 }
 
-function upgrade_openmpi {
+function bkp_upgrade_openmpi {
     # Uninstall current version of Open MPI
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
@@ -107,25 +107,31 @@ function upgrade_openmpi {
     cd "$BASE_DIR" || return
 }
 
-#function upgrade_openmpi {
-#    # Un install current version of Open MPI
-#    cd /tmp/
-#    local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
-#    wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
-#    rm -rf openmpi-${CURRENT_VERSION} && tar -xzf openmpi-${CURRENT_VERSION}.tar.gz && cd openmpi-${CURRENT_VERSION}
-#    unset PMIX_VERSION && ./configure --prefix=/opt/hpcx/ompi/ && make uninstall
-#    rm -rf /opt/hpcx/ompi/ /usr/local/mpi/ && cd ../ && rm -rf openmpi-${CURRENT_VERSION}
-#
-#    # Install latest Open MPI
-#    wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
-#    rm -rf openmpi-5.0.1 && tar -xzf openmpi-5.0.1.tar.gz && cd openmpi-5.0.1
-#    ./configure --prefix=/opt/hpcx/ompi/ && make && make install
-#    echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >>~/.bashrc
-#    echo "export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib/:\$LD_LIBRARY_PATH" >>~/.bashrc
-#    source ~/.bashrc
-#    mpirun --version
-#    cd $BASE_DIR
-#}
+function upgrade_openmpi {
+    # Un install current version of Open MPI
+    cd /tmp/
+    local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
+    wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz"
+    tar -xzf openmpi-${CURRENT_VERSION}.tar.gz
+    cd openmpi-${CURRENT_VERSION}
+    ./configure --prefix=/opt/hpcx/ompi/
+    make uninstall
+    rm -rf /opt/hpcx/ompi/ /usr/local/mpi/
+    cd ../
+    rm -rf openmpi-${CURRENT_VERSION}
+
+    # Install latest Open MPI
+    wget https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz
+    tar -xzf openmpi-5.0.1.tar.gz
+    cd openmpi-5.0.1
+    ./configure --prefix=/opt/hpcx/ompi/
+    make && make install
+    echo "export PATH=/opt/hpcx/ompi/bin:\$PATH" >> ~/.bashrc
+    echo "export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib/:\$LD_LIBRARY_PATH" >> ~/.bashrc
+    source ~/.bashrc
+    mpirun --version
+    cd $BASE_DIR
+}
 
 function install_tensorrt_llm {
     # Install CMake
