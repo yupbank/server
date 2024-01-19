@@ -141,11 +141,14 @@ function install_tensorrt_llm {
 }
 
 function build_gpt2_base_model {
-    cd ${GPT_DIR}
-
     # Download weights from HuggingFace Transformers
-    rm -rf gpt2 && git clone https://huggingface.co/gpt2-medium gpt2
-    pushd gpt2 && rm pytorch_model.bin model.safetensors && wget -q https://huggingface.co/gpt2-medium/resolve/main/pytorch_model.bin && popd
+    cd ${GPT_DIR} && rm -rf gpt2 && git clone https://huggingface.co/gpt2-medium gpt2 && cd gpt2
+    rm pytorch_model.bin model.safetensors
+    if ! wget -q https://huggingface.co/gpt2-medium/resolve/main/pytorch_model.bin; then
+        echo "Downloading pytorch_model.bin failed."
+        exit 1
+    fi
+    cd ${GPT_DIR}
 
     # Convert weights from HF Tranformers to FT format
     python3 hf_gpt_convert.py -p 1 -i gpt2 -o ./c-model/gpt2 --tensor-parallelism ${NUM_GPUS} --storage-type float16
