@@ -161,7 +161,7 @@ function build_gpt2_base_model {
     cd ${GPT_DIR}
 
     # Convert weights from HF Tranformers to FT format
-    python3 hf_gpt_convert.py -p 1 -i gpt2 -o ./c-model/gpt2 --tensor-parallelism ${NUM_GPUS} --storage-type float16
+    python3 hf_gpt_convert.py -p 2 -i gpt2 -o ./c-model/gpt2 --tensor-parallelism ${NUM_GPUS} --storage-type float16
     cd ${BASE_DIR}
 }
 
@@ -277,9 +277,6 @@ function kill_server {
 }
 
 upgrade_openmpi
-mpirun --version
-exit 0
-
 clone_tensorrt_llm_backend_repo
 install_tensorrt_llm
 build_gpt2_base_model
