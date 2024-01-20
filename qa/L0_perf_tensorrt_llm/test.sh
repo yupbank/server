@@ -99,11 +99,13 @@ function upgrade_openmpi {
     if ! grep -q '/opt/hpcx/ompi/lib' ~/.bashrc; then
         echo 'export LD_LIBRARY_PATH=/opt/hpcx/ompi/lib:$LD_LIBRARY_PATH' >>~/.bashrc
     fi
+    ldconfig
     source ~/.bashrc
 
     # Clean up
     cd "$BASE_DIR"
     mpirun --version
+    ldconfig
 }
 
 function bkp_upgrade_openmpi {
