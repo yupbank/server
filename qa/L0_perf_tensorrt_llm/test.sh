@@ -105,7 +105,6 @@ function upgrade_openmpi {
     # Clean up
     cd "$BASE_DIR"
     mpirun --version
-    ldconfig
 }
 
 function bkp_upgrade_openmpi {
