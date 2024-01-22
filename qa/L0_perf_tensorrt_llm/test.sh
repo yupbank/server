@@ -52,12 +52,13 @@ function clone_tensorrt_llm_backend_repo {
     cd $TENSORRTLLM_BACKEND_DIR && git lfs install && git submodule update --init --recursive
 }
 
+# Update Open MPI to a version compatible with SLURM.
 function upgrade_openmpi {
-    # Uninstall current version of Open MPI
     cd /tmp/
     local CURRENT_VERSION=$(mpirun --version 2>&1 | awk '/Open MPI/ {gsub(/rc[0-9]+/, "", $NF); print $NF}')
 
-    if [ -n "$CURRENT_VERSION" ]; then
+    if [ -n "$CURRENT_VERSION" ] && dpkg --compare-versions "$CURRENT_VERSION" lt "5.0.1"; then
+        # Uninstall the current version of Open MPI
         wget "https://download.open-mpi.org/release/open-mpi/v$(echo "${CURRENT_VERSION}" | awk -F. '{print $1"."$2}')/openmpi-${CURRENT_VERSION}.tar.gz" || {
             echo "Failed to download Open MPI ${CURRENT_VERSION}"
             exit 1
@@ -75,9 +76,12 @@ function upgrade_openmpi {
             exit 1
         }
         cd ../ && rm -r openmpi-${CURRENT_VERSION}
+    else
+        echo "Installed Open MPI version is not less than 5.0.1. Skipping the upgrade."
+        return
     fi
 
-    # Install latest Open MPI
+    # Install SLURM supported Open MPI version
     wget "https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.1.tar.gz" || {
         echo "Failed to download Open MPI 5.0.1"
         exit 1
@@ -101,8 +105,6 @@ function upgrade_openmpi {
     fi
     ldconfig
     source ~/.bashrc
-
-    # Clean up
     cd "$BASE_DIR"
     mpirun --version
 }
