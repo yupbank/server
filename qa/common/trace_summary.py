@@ -250,6 +250,7 @@ def summarize(frontend, traces):
                     print("\tparent id: {}".format(trace["parent_id"]))
                 ordered_timestamps = list()
                 for ts in trace["timestamps"]:
+                    # skip GRPC_WAITREAD
                     if not ts["name"].startswith("GRPC_WAITREAD"):
                         ordered_timestamps.append((ts["name"], ts["ns"]))
                 ordered_timestamps.sort(key=lambda tup: tup[1])
