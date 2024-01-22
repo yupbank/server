@@ -103,15 +103,15 @@ class HttpFrontend(AbstractFrontend):
 class GrpcFrontend(AbstractFrontend):
     @property
     def filter_timestamp(self):
-        return "GRPC_SEND_START"
+        return "GRPC_WAITREAD_START"
 
     def add_frontend_span(self, span_map, timestamps):
-        if ("REQUEST_START" in timestamps) and ("GRPC_SEND_END" in timestamps):
+        if ("GRPC_WAITREAD_START" in timestamps) and ("GRPC_SEND_END" in timestamps):
             add_span(
                 span_map,
                 timestamps,
                 "GRPC_INFER",
-                "REQUEST_START",
+                "GRPC_WAITREAD_END",
                 "GRPC_SEND_END",
             )
             add_span(
