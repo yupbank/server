@@ -106,7 +106,7 @@ class GrpcFrontend(AbstractFrontend):
         return "GRPC_WAITREAD_START"
 
     def add_frontend_span(self, span_map, timestamps):
-        if ("GRPC_WAITREAD_START" in timestamps) and ("GRPC_SEND_END" in timestamps):
+        if ("GRPC_WAITREAD_END" in timestamps) and ("GRPC_SEND_END" in timestamps):
             add_span(
                 span_map,
                 timestamps,
@@ -250,7 +250,8 @@ def summarize(frontend, traces):
                     print("\tparent id: {}".format(trace["parent_id"]))
                 ordered_timestamps = list()
                 for ts in trace["timestamps"]:
-                    ordered_timestamps.append((ts["name"], ts["ns"]))
+                    if not ts["name"].startswith("GRPC_WAITREAD"):
+                        ordered_timestamps.append((ts["name"], ts["ns"]))
                 ordered_timestamps.sort(key=lambda tup: tup[1])
 
                 now = None
