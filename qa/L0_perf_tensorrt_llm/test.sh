@@ -38,7 +38,6 @@ TENSORRTLLM_BACKEND_DIR="/opt/tritonserver/tensorrtllm_backend"
 GPT_DIR="$TENSORRTLLM_BACKEND_DIR/tensorrt_llm/examples/gpt"
 TOKENIZER_DIR="$GPT_DIR/gpt2"
 ENGINES_DIR="${BASE_DIR}/engines/inflight_batcher_llm/${NUM_GPUS}-gpu"
-
 TRITON_DIR=${TRITON_DIR:="/opt/tritonserver"}
 SERVER=${TRITON_DIR}/bin/tritonserver
 BACKEND_DIR=${TRITON_DIR}/backends
@@ -114,13 +113,7 @@ function install_tensorrt_llm {
     bash ${TENSORRTLLM_BACKEND_DIR}/tensorrt_llm/docker/common/install_cmake.sh
     export PATH="/usr/local/cmake/bin:${PATH}"
 
-    # PyTorch needs to be built from source for aarch64
-    ARCH="$(uname -i)"
-    if [ "${ARCH}" = "aarch64" ]; then
-        TORCH_INSTALL_TYPE="src_non_cxx11_abi"
-    else
-        TORCH_INSTALL_TYPE="pypi"
-    fi &&
+    TORCH_INSTALL_TYPE="pypi" &&
         (cd ${TENSORRTLLM_BACKEND_DIR}/tensorrt_llm &&
             bash docker/common/install_pytorch.sh $TORCH_INSTALL_TYPE &&
             python3 ./scripts/build_wheel.py --trt_root=/usr/local/tensorrt &&
@@ -253,7 +246,7 @@ function kill_server {
     done
 }
 
-#upgrade_openmpi
+upgrade_openmpi
 clone_tensorrt_llm_backend_repo
 install_tensorrt_llm
 build_gpt2_base_model
