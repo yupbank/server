@@ -253,7 +253,7 @@ function kill_server {
     done
 }
 
-upgrade_openmpi
+#upgrade_openmpi
 clone_tensorrt_llm_backend_repo
 install_tensorrt_llm
 build_gpt2_base_model
